@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WASTELAND PROTOCOL | ENTRY_POINT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f49bd",
+                        "toxic": "#ccff00",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "slate-custom": "#282e39",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Space Grotesk", sans-serif;
+    background-color: #101622;
+    overflow: hidden
+    }
+.shard {
+    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)
+    }
+.shard-reverse {
+    clip-path: polygon(0% 0%, 90% 0%, 100% 100%, 10% 100%)
+    }
+.industrial-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuB8kW8vSX0cjYzIf9ET6VN6dunnXDXlKr8D3-tIMQ7XklsPvHo1cHuo8XFcILTJLnnD6Pjauw4csfYPUWQYmhxlIu4JaiNyY34HyFXUqI0gW74FAFx4G9xtYzxwxuqxfbN1OlW46dJuznt2220VWmwqKqZnUv9RkMEM96Rki9Klaah5RU0oeuIUhnqdY2dCX7MH7MzeqT01ij98l3AV6AMwH-L0vCvNinpdTyjuzzj9BnidPbH2ZbqTQZaPVjwUqdkn8l468OgjjFY);
+    background-blend-mode: overlay
+    }
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(https://www.transparenttextures.com/patterns/asfalt-dark.png);
+    pointer-events: none;
+    opacity: 0.15;
+    z-index: 50
+    }
+.scanline {
+    width: 100%;
+    height: 2px;
+    background: rgba(204, 255, 0, 0.05);
+    position: absolute;
+    z-index: 40
+    }
+.menu-skew {
+    transform: skewx(-15deg)
+    }
+.bolt {
+    width: 8px;
+    height: 8px;
+    background: #3b4354;
+    border-radius: 50%;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.8), 1px 1px 1px rgba(255, 255, 255, 0.1)
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen relative font-display">
+<div class="noise-overlay"></div>
+<!-- Background Layer: Ruined Cityscape -->
+<div class="fixed inset-0 z-0 opacity-40">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-background-dark"></div>
+<div class="w-full h-full bg-cover bg-center" data-alt="Dark post-apocalyptic city ruins at dusk" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCh-X2FhB-IRaXF58vMgtCTASkLl5HyPXxyNi5I2GO7vWboZ1n4yv-mb0QvUWvdFYddnppx5fQqrwIn08aUiN22JkIFtzn14rcaIYaRrqcvRM7pUu2Ji3Xl8QNyh2p3wDfzOYMoqBYGuu0k18z6286waofnQTU4jLmpK5R__T_4jTDwBpQjuiutjdLESO0Pq6ziqisDR88Q8_ZvEJL5aX66KW2uF9RBZuTYYaRIede-JPdUnvpI5QNlmG99Z-ACTei1iq4fR_Gwl70');"></div>
+</div>
+<!-- Main Layout Container -->
+<div class="relative z-10 flex h-screen w-full flex-col overflow-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between px-12 py-6 border-b border-white/10 backdrop-blur-sm bg-background-dark/30">
+<div class="flex items-center gap-4">
+<div class="size-8 text-toxic">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h1 class="text-2xl font-black tracking-tighter uppercase italic">Wasteland <span class="text-toxic">Protocol</span></h1>
+</div>
+<nav class="flex items-center gap-10">
+<a class="text-sm font-bold tracking-widest hover:text-toxic transition-colors" href="#">SQUAD_DATABASE</a>
+<a class="text-sm font-bold tracking-widest hover:text-toxic transition-colors" href="#">INTEL_LOGS</a>
+<a class="text-sm font-bold tracking-widest hover:text-toxic transition-colors" href="#">GEAR_CALIBRATION</a>
+<div class="flex gap-4 border-l border-white/20 pl-10">
+<button class="size-10 bg-slate-custom flex items-center justify-center rounded-sm hover:bg-primary transition-all">
+<span class="material-symbols-outlined text-sm">settings</span>
+</button>
+<button class="size-10 bg-slate-custom flex items-center justify-center rounded-sm hover:bg-red-600 transition-all">
+<span class="material-symbols-outlined text-sm">power_settings_new</span>
+</button>
+</div>
+</nav>
+</header>
+<!-- Main Content Body -->
+<main class="flex-1 relative flex items-center px-12">
+<!-- Dynamic Geometric Shards (The Persona Aesthetic) -->
+<div class="absolute inset-0 pointer-events-none">
+<!-- Large Background Shard -->
+<div class="shard absolute -left-20 top-0 h-full w-[60%] bg-primary/20 backdrop-blur-md industrial-texture border-r-4 border-primary/40 -rotate-2"></div>
+<!-- Middle Textured Shard -->
+<div class="shard-reverse absolute left-[20%] top-10 h-[120%] w-[40%] bg-slate-custom/60 backdrop-blur-sm industrial-texture border-l-4 border-slate-400/20 rotate-6 shadow-2xl shadow-black/50">
+<!-- Bolt details -->
+<div class="absolute top-1/4 left-8 bolt"></div>
+<div class="absolute top-1/2 left-12 bolt"></div>
+<div class="absolute bottom-1/4 left-10 bolt"></div>
+</div>
+<!-- Contrast Shard -->
+<div class="shard absolute left-[45%] -top-20 h-[140%] w-[15%] bg-toxic/10 border-x border-toxic/30 rotate-12 flex flex-col justify-end p-20">
+<div class="w-1 h-1/2 bg-toxic/40 rounded-full mb-4"></div>
+<div class="w-1 h-1/4 bg-toxic/20 rounded-full"></div>
+</div>
+</div>
+<!-- Character Silhouette (Scavenger) -->
+<div class="absolute bottom-0 right-[5%] h-[90%] w-[40%] pointer-events-none">
+<div class="relative h-full w-full">
+<!-- Styled Masking for Persona effect -->
+<div class="absolute inset-0 bg-cover bg-no-repeat bg-bottom drop-shadow-[0_0_50px_rgba(15,73,189,0.5)] grayscale brightness-50" data-alt="Stylized high contrast silhouette of a gas-mask wearing scavenger" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA9ETkwWz9nCoeu9VD49civXDGLI54NTM-_gB54ITSyknoulfl8B3G6XGlh6m_jeomiiy9zqAbOUYReLqAn6w8B0FMewR1O4v7wy7YnBnggDWisWvJSLwuzbs82FiKXCCIXgVQfw2SIc7HTpIdTEI82N6uuPQydT_vdLftc1nVPeEhTXk7Iykah_-GjvRRkOkQ2KaxtcvrsfSoItn2ifwBtwnkIc_3IX1sptZ417lIU5sjxaWzUgPbHQLX8ph0BySSnCOAEeh2tRbY'); mask-image: linear-gradient(to right, transparent, black 40%);">
+</div>
+<!-- Overlapping shard on character -->
+<div class="shard-reverse absolute bottom-[-10%] right-[-5%] h-1/3 w-1/2 bg-toxic/80 mix-blend-overlay rotate-12"></div>
+</div>
+</div>
+<!-- Menu Content -->
+<div class="relative z-20 flex flex-col gap-8 max-w-xl">
+<div class="mb-12">
+<div class="flex items-center gap-3 text-toxic/80 mb-2">
+<span class="material-symbols-outlined text-lg">terminal</span>
+<span class="text-xs font-bold tracking-[0.3em] uppercase">System_Active // Session_ID: 8821</span>
+</div>
+<h2 class="text-7xl font-black italic uppercase leading-none tracking-tighter">
+<span class="block">Entry_</span>
+<span class="block ml-8 text-primary">Point</span>
+</h2>
+</div>
+<!-- Slanted Menu Buttons -->
+<nav class="flex flex-col gap-4">
+<!-- New Game -->
+<div class="group cursor-pointer relative">
+<div class="absolute -inset-1 bg-toxic/0 group-hover:bg-toxic/10 transition-all duration-300 menu-skew rounded-sm"></div>
+<button class="relative menu-skew bg-primary text-white w-full py-5 px-8 flex justify-between items-center group-hover:translate-x-4 transition-transform duration-300 border-l-8 border-toxic">
+<span class="text-2xl font-black italic tracking-widest uppercase truncate">Start_Extraction</span>
+<span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Load Game -->
+<div class="group cursor-pointer relative">
+<div class="absolute -inset-1 bg-white/0 group-hover:bg-white/5 transition-all duration-300 menu-skew rounded-sm"></div>
+<button class="relative menu-skew bg-slate-custom text-white/80 w-[95%] py-4 px-8 flex justify-between items-center group-hover:translate-x-4 transition-transform duration-300 border-l-4 border-slate-500">
+<span class="text-xl font-bold tracking-widest uppercase truncate">Recover_Data_Logs</span>
+<span class="text-xs opacity-50 font-mono">LATEST: 48H_AGO</span>
+</button>
+</div>
+<!-- System Config -->
+<div class="group cursor-pointer relative">
+<div class="absolute -inset-1 bg-white/0 group-hover:bg-white/5 transition-all duration-300 menu-skew rounded-sm"></div>
+<button class="relative menu-skew bg-slate-custom text-white/80 w-[90%] py-4 px-8 flex justify-between items-center group-hover:translate-x-4 transition-transform duration-300 border-l-4 border-slate-500">
+<span class="text-xl font-bold tracking-widest uppercase truncate">Calibration</span>
+<span class="material-symbols-outlined text-sm">tune</span>
+</button>
+</div>
+<!-- Exit -->
+<div class="group cursor-pointer relative mt-4">
+<button class="relative menu-skew bg-transparent hover:bg-red-900/20 text-white/40 hover:text-red-500 w-[80%] py-2 px-8 flex items-center gap-4 transition-all duration-300">
+<div class="h-[1px] flex-1 bg-white/10 group-hover:bg-red-500/50"></div>
+<span class="text-sm font-bold tracking-[0.4em] uppercase">Terminate_Session</span>
+</button>
+</div>
+</nav>
+<!-- Stats Footer Display -->
+<div class="mt-12 flex gap-4">
+<div class="flex flex-col gap-1 border-l-2 border-toxic pl-4 bg-toxic/5 py-2 pr-8">
+<p class="text-[10px] font-bold text-toxic/60 uppercase tracking-tighter">Atmosphere_Toxicity</p>
+<p class="text-2xl font-black italic">88% <span class="text-xs text-red-500">↑ HIGH</span></p>
+</div>
+<div class="flex flex-col gap-1 border-l-2 border-primary pl-4 bg-primary/5 py-2 pr-8">
+<p class="text-[10px] font-bold text-primary/60 uppercase tracking-tighter">Power_Grid</p>
+<p class="text-2xl font-black italic">STABLE</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Sidebar Wires & Hardware Aesthetic -->
+<div class="absolute right-0 top-0 h-full w-4 flex flex-col items-center justify-around py-20 pointer-events-none opacity-30">
+<div class="w-[2px] h-full bg-slate-400"></div>
+<div class="absolute top-20 right-4 w-12 h-20 border-r-2 border-y-2 border-slate-400 rounded-r-lg"></div>
+<div class="absolute bottom-40 right-4 w-8 h-8 border-2 border-toxic rotate-45"></div>
+</div>
+<!-- Utility Footer -->
+<footer class="p-6 flex justify-between items-center bg-background-dark border-t border-white/5 z-20">
+<div class="flex gap-6 items-center">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-toxic rounded-full animate-pulse"></span>
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Server_Link: Established</span>
+</div>
+<div class="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Build: v.0.4.12-Alpha</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em]">Unauthorized access is punishable by extraction</span>
+<div class="flex gap-1">
+<div class="w-1 h-3 bg-white/20"></div>
+<div class="w-1 h-3 bg-toxic"></div>
+<div class="w-1 h-3 bg-primary"></div>
+</div>
+</div>
+</footer>
+</div>
+<!-- Random Industrial Elements Decoration -->
+<div class="absolute top-1/4 left-1/2 w-48 h-1 bg-white/5 rotate-[45deg] z-0"></div>
+<div class="absolute bottom-1/3 left-1/4 w-96 h-[2px] bg-primary/20 -rotate-[15deg] z-0"></div>
+</body></html>

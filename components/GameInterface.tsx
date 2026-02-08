@@ -1,0 +1,557 @@
+
+import React, { useMemo, useState } from 'react';
+import { GameState, Difficulty, InventoryItem } from '../types';
+import { TopNav } from './game/TopNav';
+import { LeftPanel } from './game/LeftPanel';
+import { CenterPanel } from './game/CenterPanel';
+import { RightPanel } from './game/RightPanel';
+import { BottomBanner } from './game/BottomBanner';
+import { MobileTopNav } from './mobile/MobileTopNav';
+import { MobileBottomNav } from './mobile/MobileBottomNav';
+import { MobileInventoryView } from './mobile/MobileInventoryView';
+import { MobileMenuOverlay } from './mobile/MobileMenuOverlay';
+import { MobileMapView } from './mobile/MobileMapView'; // Import MobileMapView
+
+// Modals
+import { InventoryModal } from './game/modals/InventoryModal';
+import { SettingsModal } from './game/modals/SettingsModal';
+import { SaveManagerModal } from './game/modals/SaveManagerModal';
+import { EquipmentModal } from './game/modals/EquipmentModal';
+import { SocialModal } from './game/modals/SocialModal';
+import { SocialPhoneModal } from './game/modals/SocialPhoneModal';
+import { TasksModal } from './game/modals/TasksModal';
+import { SkillsModal } from './game/modals/SkillsModal';
+import { StoryModal } from './game/modals/StoryModal';
+import { ContractModal } from './game/modals/ContractModal';
+import { LootModal } from './game/modals/LootModal';
+import { LootVaultModal } from './game/modals/LootVaultModal';
+import { ShelterModal } from './game/modals/ShelterModal';
+import { PresentCharactersModal } from './game/modals/PresentCharactersModal';
+import { PartyModal } from './game/modals/PartyModal';
+import { MapModal } from './game/modals/MapModal';
+import { MemoryModal } from './game/modals/MemoryModal';
+import { DynamicWorldModal } from './game/modals/DynamicWorldModal';
+import { MemorySummaryModal } from './game/modals/MemorySummaryModal';
+
+import { useGameLogic } from '../hooks/useGameLogic';
+
+interface GameInterfaceProps {
+    onExit: () => void;
+    initialState?: GameState;
+}
+
+export const GameInterface: React.FC<GameInterfaceProps> = ({ onExit, initialState }) => {
+  const {
+      gameState, setGameState,
+      settings, saveSettings,
+      commandQueue, pendingCommands, addToQueue, removeFromQueue,
+      currentOptions, lastAIResponse, lastAIThinking, isProcessing, isStreaming, isPhoneProcessing, phoneProcessingThreadId, phoneProcessingScope,
+      draftInput, setDraftInput,
+      memorySummaryState, confirmMemorySummary, applyMemorySummary, cancelMemorySummary,
+      handlePlayerAction, handlePlayerInput, handleSendMessage, handleCreateMoment, handleCreatePublicPost, handleCreateThread, handleMarkThreadRead, handleSilentWorldUpdate, handleWaitForPhoneReply,
+      stopInteraction, handleEditLog, handleDeleteLog, handleEditUserLog, handleUpdateLogText, handleUserRewrite,
+      manualSave, loadGame, handleReroll, handleDeleteTask,
+      handleEditPhoneMessage, handleDeletePhoneMessage,
+      phoneNotifications
+  } = useGameLogic(initialState, onExit);
+
+  // Modal States
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [mobileActiveTab, setMobileActiveTab] = useState<'CHAT' | 'CHAR' | 'INV' | 'MAP' | 'MENU'>('CHAT');
+  const [settingsView, setSettingsView] = useState<string>('MAIN');
+
+  const closeModal = () => setActiveModal(null);
+  const openSettings = (view: string = 'MAIN') => {
+      setSettingsView(view);
+      setActiveModal('SETTINGS');
+  };
+
+  // Helper to handle commands that need to update state directly (like equipping)
+  const handleUpdateConfidant = (id: string, updates: any) => {
+      const newConfidants = gameState.社交.map(c => c.id === id ? { ...c, ...updates } : c);
+      setGameState({ ...gameState, 社交: newConfidants });
+  };
+
+  const queueEquipItem = (item: InventoryItem) => {
+      const slotKey = item.装备槽位 || (item.类型 === 'weapon' ? '主手' : '身体');
+      addToQueue(`装备物品: ${item.名称}`, undefined, `equip_${slotKey}`, {
+          kind: 'EQUIP',
+          slotKey,
+          itemId: item.id,
+          itemName: item.名称
+      });
+  };
+
+  const queueUnequipItem = (slotKey: string, itemName?: string, itemId?: string) => {
+      addToQueue(`卸下装备: ${itemName || slotKey}`, undefined, `equip_${slotKey}`, {
+          kind: 'UNEQUIP',
+          slotKey,
+          itemId,
+          itemName
+      });
+  };
+
+  const queueUseItem = (item: InventoryItem) => {
+      addToQueue(`使用物品: ${item.名称}`, undefined, undefined, {
+          kind: 'USE',
+          itemId: item.id,
+          itemName: item.名称,
+          quantity: 1
+      });
+  };
+
+  const handleEquipItem = (item: InventoryItem) => {
+      queueEquipItem(item);
+  };
+
+  const isHellMode = gameState.游戏难度 === Difficulty.HELL;
+  const hasMagicPhone = (gameState.背包 || []).some(item => item.名称 === '魔石通讯终端');
+  const activeCommands = isProcessing ? pendingCommands : commandQueue;
+
+  const previewState = useMemo(() => {
+      if (!activeCommands || activeCommands.length === 0) return gameState;
+
+      const next = {
+          ...gameState,
+          角色: { ...gameState.角色, 装备: { ...(gameState.角色?.装备 || {}) } },
+          背包: Array.isArray(gameState.背包) ? gameState.背包.map(item => ({ ...item })) : []
+      };
+
+      const findItemIndex = (itemId?: string, itemName?: string) => {
+          if (itemId) {
+              const idx = next.背包.findIndex(i => i.id === itemId);
+              if (idx >= 0) return idx;
+          }
+          if (itemName) return next.背包.findIndex(i => i.名称 === itemName);
+          return -1;
+      };
+
+      const resolveSlotKey = (cmd: any, item?: any) => {
+          if (cmd.slotKey) return cmd.slotKey;
+          if (item?.装备槽位) return item.装备槽位;
+          if (item?.类型 === 'weapon') return '主手';
+          if (item?.类型 === 'armor') return '身体';
+          return '';
+      };
+
+      activeCommands.forEach((cmd: any) => {
+          if (cmd.kind === 'EQUIP') {
+              const idx = findItemIndex(cmd.itemId, cmd.itemName);
+              const item = idx >= 0 ? next.背包[idx] : null;
+              const slotKey = resolveSlotKey(cmd, item);
+              if (slotKey) {
+                  next.角色.装备[slotKey] = cmd.itemName || item?.名称 || next.角色.装备[slotKey];
+              }
+              if (item) {
+                  item.已装备 = true;
+                  if (slotKey) item.装备槽位 = slotKey;
+              }
+          } else if (cmd.kind === 'UNEQUIP') {
+              const slotKey = cmd.slotKey;
+              if (slotKey) next.角色.装备[slotKey] = '';
+              const idx = findItemIndex(cmd.itemId, cmd.itemName);
+              const item = idx >= 0 ? next.背包[idx] : null;
+              if (item) {
+                  item.已装备 = false;
+                  item.装备槽位 = undefined;
+              }
+          } else if (cmd.kind === 'USE') {
+              const idx = findItemIndex(cmd.itemId, cmd.itemName);
+              if (idx >= 0) {
+                  const item = next.背包[idx];
+                  const nextQty = (item.数量 || 1) - (cmd.quantity || 1);
+                  if (nextQty <= 0) next.背包.splice(idx, 1);
+                  else item.数量 = nextQty;
+              }
+          }
+      });
+
+      return next;
+  }, [gameState, activeCommands]);
+
+  return (
+    <div 
+        className="w-full h-dvh flex flex-col bg-boot overflow-hidden relative cassette-futurism-theme" 
+    >
+        {/* HUD Frame - Matching Menu Page Style */}
+        <div className="hud-frame">
+            <div className="hud-corner top-left"></div>
+            <div className="hud-corner top-right"></div>
+            <div className="hud-corner bottom-left"></div>
+            <div className="hud-corner bottom-right"></div>
+        </div>
+
+        {phoneNotifications.length > 0 && (
+            <div className="absolute top-12 right-16 z-50 space-y-2 pointer-events-none">
+                {phoneNotifications.map(note => (
+                    <div key={note.id} className="bg-black/90 border border-blue-500 text-white px-4 py-2 rounded shadow-lg text-xs">
+                        <div className="font-bold uppercase tracking-widest text-blue-300">{note.title}</div>
+                        <div className="text-zinc-300 mt-1">{note.message}</div>
+                    </div>
+                ))}
+            </div>
+        )}
+        
+        {/* Art Style Overlays - Wasteland Terminal Effect (Retained but subtle) */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] animate-pulse z-0"></div>
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03] z-0">
+            <div className="w-full h-full bg-gradient-to-b from-transparent via-green-500/10 to-transparent animate-scanline"></div>
+        </div>
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)] z-0"></div>
+
+        <div className="flex flex-col h-full relative z-10">
+            <TopNav 
+                time={gameState.游戏时间} 
+                location={gameState.当前地点} 
+                floor={gameState.当前楼层} 
+                weather={gameState.天气} 
+                coords={gameState.世界坐标}
+                isHellMode={isHellMode}
+            />
+            
+            <div className="flex-1 flex flex-row relative overflow-hidden p-4 gap-4">
+                <div className="contents animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    {/* Left Panel - Increased Width */}
+                    <div className="w-[22%] min-w-[300px] h-full flex flex-col">
+                        <LeftPanel stats={previewState.角色} isHellMode={isHellMode} difficulty={gameState.游戏难度} />
+                    </div>
+                    
+                    {/* Center Panel - Flex Grow */}
+                    <div className="flex-1 min-w-0 h-full">
+                        <CenterPanel 
+                            logs={gameState.日志} 
+                            combatState={gameState.战斗}
+                            playerStats={previewState.角色}
+                            skills={gameState.角色.技能}
+                            magic={gameState.角色.魔法}
+                            inventory={previewState.背包} 
+                            confidants={gameState.社交} 
+                            onSendMessage={handlePlayerInput}
+                            onReroll={handleReroll}
+                            lastRawResponse={lastAIResponse}
+                            lastThinking={lastAIThinking}
+                            onPlayerAction={handlePlayerAction}
+                            isProcessing={isProcessing}
+                            isStreaming={isStreaming}
+                            commandQueue={activeCommands}
+                            onRemoveCommand={isProcessing ? undefined : removeFromQueue}
+                            
+                            onEditLog={handleEditLog}
+                            onDeleteLog={handleDeleteLog}
+                            onEditUserLog={handleEditUserLog}
+                            onUpdateLogText={handleUpdateLogText}
+                            handleUserRewrite={handleUserRewrite}
+                            onStopInteraction={stopInteraction}
+                            draftInput={draftInput}
+                            setDraftInput={setDraftInput}
+
+                            actionOptions={currentOptions}
+                            fontSize={settings.fontSize}
+                            chatLogLimit={settings.chatLogLimit ?? 30}
+                            enableCombatUI={settings.enableCombatUI} 
+                            isHellMode={isHellMode}
+                        />
+                    </div>
+
+                    {/* Right Panel - Increased Width */}
+                    <div className="w-[18%] min-w-[240px] h-full flex flex-col">
+                        <RightPanel 
+                            onOpenInventory={() => setActiveModal('INVENTORY')}
+                            onOpenEquipment={() => setActiveModal('EQUIPMENT')}
+                            onOpenSettings={() => openSettings('MAIN')}
+                            onOpenSocial={() => setActiveModal('SOCIAL')}
+                            onOpenTasks={() => setActiveModal('TASKS')}
+                            onOpenSkills={() => setActiveModal('SKILLS')}
+                            onOpenMap={() => setActiveModal('MAP')}
+                            onOpenPhone={() => hasMagicPhone && setActiveModal('PHONE')}
+                            onOpenWorld={() => setActiveModal('WORLD')}
+                            onOpenFamilia={() => setActiveModal('FAMILIA')}
+                            onOpenStory={() => setActiveModal('STORY')}
+                            onOpenContract={() => setActiveModal('CONTRACT')}
+                            onOpenLoot={() => setActiveModal('LOOT')}
+                            onOpenLootVault={() => setActiveModal('LOOT_VAULT')}
+                            onOpenMemory={() => setActiveModal('MEMORY')}
+                            onOpenPresent={() => setActiveModal('PRESENT')}
+                            onOpenParty={() => setActiveModal('PARTY')}
+                            onOpenSaveManager={() => setActiveModal('SAVE_MANAGER')}
+                            isHellMode={isHellMode}
+                            hasPhone={hasMagicPhone}
+                            hasSignal={!isHellMode} // Assume signal if not hell mode for now, or track separately
+                            phoneProcessing={isPhoneProcessing}
+                            phoneProcessingScope={phoneProcessingScope}
+                        />
+                    </div>
+                </div>
+            </div>
+            <BottomBanner isHellMode={isHellMode} announcements={gameState.世界?.头条新闻} />
+        </div>
+
+        {/* Mobile View */}
+        <div className="hidden flex flex-col h-full w-full">
+            <MobileTopNav 
+                time={gameState.游戏时间} 
+                location={gameState.当前地点} 
+                floor={gameState.当前楼层} 
+                weather={gameState.天气}
+                coords={gameState.世界坐标}
+                isHellMode={isHellMode}
+            />
+            <div className="flex-1 relative overflow-hidden w-full">
+                 {mobileActiveTab === 'CHAT' && (
+                     <CenterPanel 
+                        logs={gameState.日志} 
+                        combatState={gameState.战斗}
+                        playerStats={previewState.角色}
+                        skills={gameState.角色.技能}
+                        magic={gameState.角色.魔法}
+                        inventory={previewState.背包}
+                        confidants={gameState.社交} 
+                        onSendMessage={handlePlayerInput}
+                        onReroll={handleReroll}
+                        lastRawResponse={lastAIResponse}
+                        lastThinking={lastAIThinking}
+                        onPlayerAction={handlePlayerAction}
+                        isProcessing={isProcessing}
+                        isStreaming={isStreaming}
+                        commandQueue={activeCommands}
+                        onRemoveCommand={isProcessing ? undefined : removeFromQueue}
+                        onEditLog={handleEditLog}
+                        onDeleteLog={handleDeleteLog}
+                        onEditUserLog={handleEditUserLog}
+                        onUpdateLogText={handleUpdateLogText}
+                        handleUserRewrite={handleUserRewrite}
+                        onStopInteraction={stopInteraction}
+                        draftInput={draftInput}
+                        setDraftInput={setDraftInput}
+                        actionOptions={currentOptions}
+                        fontSize={settings.fontSize}
+                        chatLogLimit={settings.chatLogLimit ?? 30}
+                        className="border-none w-full"
+                        enableCombatUI={settings.enableCombatUI}
+                        isHellMode={isHellMode}
+                    />
+                 )}
+                 {mobileActiveTab === 'INV' && (
+                     <MobileInventoryView 
+                        items={previewState.背包}
+                        equipment={previewState.角色.装备}
+                        onEquipItem={queueEquipItem}
+                        onUnequipItem={queueUnequipItem}
+                        onUseItem={queueUseItem}
+                     />
+                 )}
+                 {mobileActiveTab === 'CHAR' && (
+                     <div className="h-full overflow-y-auto bg-zinc-950 p-4">
+                         <LeftPanel stats={previewState.角色} className="w-full border-none shadow-none" isHellMode={isHellMode} difficulty={gameState.游戏难度} />
+                     </div>
+                 )}
+                 {mobileActiveTab === 'MAP' && (
+                     <MobileMapView 
+                        worldMap={gameState.地图}
+                        currentPos={gameState.世界坐标}
+                        playerName={gameState.角色.姓名}
+                        confidants={gameState.社交}
+                        floor={gameState.当前楼层} 
+                     />
+                 )}
+                 {mobileActiveTab === 'MENU' && (
+                     <MobileMenuOverlay 
+                        isOpen={true} 
+                        onClose={() => setMobileActiveTab('CHAT')}
+                        hasPhone={hasMagicPhone}
+                        actions={{
+                            onOpenSettings: () => openSettings('MAIN'),
+                            onOpenEquipment: () => setActiveModal('EQUIPMENT'),
+                            onOpenSocial: () => setActiveModal('SOCIAL'),
+                            onOpenTasks: () => setActiveModal('TASKS'),
+                            onOpenSkills: () => setActiveModal('SKILLS'),
+                            onOpenPhone: () => hasMagicPhone && setActiveModal('PHONE'),
+                            onOpenWorld: () => setActiveModal('WORLD'),
+                            onOpenFamilia: () => setActiveModal('FAMILIA'),
+                            onOpenStory: () => setActiveModal('STORY'),
+                            onOpenContract: () => setActiveModal('CONTRACT'),
+                            onOpenLoot: () => setActiveModal('LOOT'),
+                            onOpenLootVault: () => setActiveModal('LOOT_VAULT'),
+                            onOpenSaveManager: () => setActiveModal('SAVE_MANAGER'),
+                            onOpenMemory: () => setActiveModal('MEMORY'),
+                            onOpenPresent: () => setActiveModal('PRESENT'),
+                            onOpenParty: () => setActiveModal('PARTY'),
+                        }}
+                     />
+                 )}
+            </div>
+            <MobileBottomNav onTabSelect={setMobileActiveTab} activeTab={mobileActiveTab} isHellMode={isHellMode} />
+        </div>
+
+        {/* --- Modals --- */}
+        {/* Modals remain mostly neutral in style, except where internal specific theming applies */}
+        
+        <InventoryModal 
+            isOpen={activeModal === 'INVENTORY'} 
+            onClose={closeModal} 
+            items={previewState.背包} 
+            equipment={previewState.角色.装备} 
+            onEquipItem={handleEquipItem} 
+            onUnequipItem={queueUnequipItem} 
+            onUseItem={queueUseItem}
+        />
+
+        <EquipmentModal 
+            isOpen={activeModal === 'EQUIPMENT'} 
+            onClose={closeModal} 
+            equipment={previewState.角色.装备}
+            inventory={previewState.背包}
+            onUnequipItem={queueUnequipItem}
+        />
+        
+        <SocialModal 
+            isOpen={activeModal === 'SOCIAL'}
+            onClose={closeModal}
+            confidants={gameState.社交}
+            onAddToQueue={addToQueue}
+            onUpdateConfidant={handleUpdateConfidant}
+        />
+
+        <SocialPhoneModal 
+            isOpen={activeModal === 'PHONE'}
+            onClose={closeModal}
+            phoneState={gameState.手机}
+            contacts={gameState.社交}
+            npcTracking={gameState.世界?.NPC后台跟踪}
+            playerName={gameState.角色.姓名}
+            hasPhone={hasMagicPhone}
+            onSendMessage={handleSendMessage}
+            onEditMessage={handleEditPhoneMessage}
+            onDeleteMessage={handleDeletePhoneMessage}
+            onCreateThread={handleCreateThread}
+            onReadThread={handleMarkThreadRead}
+            onCreateMoment={(content, imageDesc) => handleCreateMoment(content, imageDesc)}
+            onCreatePublicPost={(content, imageDesc, topic) => handleCreatePublicPost(content, imageDesc, topic)}
+            onWaitReply={handleWaitForPhoneReply}
+            isPhoneProcessing={isPhoneProcessing}
+            phoneProcessingThreadId={phoneProcessingThreadId}
+            phoneProcessingScope={phoneProcessingScope}
+        />
+
+        {/* Updated Tasks Modal */}
+        <TasksModal 
+            isOpen={activeModal === 'TASKS'} 
+            onClose={closeModal} 
+            tasks={gameState.任务} 
+            onDeleteTask={handleDeleteTask}
+        />
+
+        <SkillsModal 
+            isOpen={activeModal === 'SKILLS'} 
+            onClose={closeModal} 
+            skills={gameState.角色.技能} 
+            magic={gameState.角色.魔法}
+        />
+
+        <StoryModal 
+            isOpen={activeModal === 'STORY'} 
+            onClose={closeModal} 
+            story={gameState.剧情} 
+        />
+
+        <ContractModal 
+            isOpen={activeModal === 'CONTRACT'} 
+            onClose={closeModal} 
+            contracts={gameState.契约} 
+        />
+
+        <LootModal 
+            isOpen={activeModal === 'LOOT'} 
+            onClose={closeModal} 
+            items={gameState.公共战利品} 
+            carrier={gameState.战利品背负者}
+        />
+
+        <LootVaultModal
+            isOpen={activeModal === 'LOOT_VAULT'}
+            onClose={closeModal}
+            items={gameState.战利品}
+        />
+
+        <ShelterModal 
+            isOpen={activeModal === 'FAMILIA'} 
+            onClose={closeModal} 
+            familia={gameState.眷族} 
+        />
+
+        <PresentCharactersModal 
+            isOpen={activeModal === 'PRESENT'} 
+            onClose={closeModal} 
+            characters={gameState.社交.filter(c => c.是否在场)} 
+        />
+
+        <PartyModal 
+            isOpen={activeModal === 'PARTY'} 
+            onClose={closeModal} 
+            characters={gameState.社交} 
+        />
+
+        <MapModal 
+            isOpen={activeModal === 'MAP'} 
+            onClose={closeModal}
+            worldMap={gameState.地图}
+            currentPos={gameState.世界坐标}
+            floor={gameState.当前楼层}
+            location={gameState.当前地点}
+            playerName={gameState.角色.姓名}
+            confidants={gameState.社交}
+        />
+
+        <MemoryModal 
+            isOpen={activeModal === 'MEMORY'} 
+            onClose={closeModal} 
+            memory={gameState.记忆}
+            logs={gameState.日志}
+            onUpdateMemory={(mem) => setGameState({...gameState, 记忆: mem})} 
+        />
+
+        <DynamicWorldModal 
+            isOpen={activeModal === 'WORLD'} 
+            onClose={closeModal} 
+            worldState={gameState.世界}
+            gameTime={gameState.游戏时间}
+            onSilentWorldUpdate={handleSilentWorldUpdate}
+        />
+
+        <MemorySummaryModal
+            isOpen={!!memorySummaryState}
+            phase={memorySummaryState?.phase || 'preview'}
+            type={memorySummaryState?.type || 'S2M'}
+            entries={memorySummaryState?.entries || []}
+            summary={memorySummaryState?.summary}
+            onConfirm={confirmMemorySummary}
+            onApply={applyMemorySummary}
+            onCancel={cancelMemorySummary}
+        />
+
+        <SaveManagerModal
+            isOpen={activeModal === 'SAVE_MANAGER'}
+            onClose={closeModal}
+            gameState={gameState}
+            onSaveGame={manualSave}
+            onLoadGame={loadGame}
+            onUpdateGameState={setGameState}
+        />
+        
+        <SettingsModal 
+            isOpen={activeModal === 'SETTINGS'} 
+            onClose={closeModal} 
+            settings={settings} 
+            avatarUrl={gameState.角色.头像} 
+            onSaveSettings={saveSettings} 
+            onSaveGame={manualSave} 
+            onLoadGame={loadGame} 
+            onUpdateAvatar={(url) => setGameState({...gameState, 角色: {...gameState.角色, 头像: url}})} 
+            onExitGame={onExit} 
+            gameState={gameState} 
+            onUpdateGameState={setGameState} 
+            initialView={settingsView as any}
+        />
+    </div>
+  );
+};

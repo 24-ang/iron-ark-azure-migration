@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dynamic Wasteland Menu - Variant 2</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&amp;family=Orbitron:wght@400;700&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#adff2f", // Toxic Neon Green
+              "background-light": "#2d3436",
+              "background-dark": "#0d0f10",
+              "hazard-yellow": "#f1c40f",
+              "slate-grey": "#2c3e50"
+            },
+            fontFamily: {
+              display: ["'Black Ops One'", "system-ui"],
+              ui: ["'Orbitron'", "sans-serif"],
+              mono: ["'Share Tech Mono'", "monospace"],
+            },
+            borderRadius: {
+              DEFAULT: "2px",
+            },
+            animation: {
+              'pulse-fast': 'pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'glitch': 'glitch 2s infinite',
+            },
+            keyframes: {
+                glitch: {
+                    '0%, 100%': { transform: 'translate(0)' },
+                    '33%': { transform: 'translate(-2px, 2px)' },
+                    '66%': { transform: 'translate(2px, -2px)' },
+                }
+            }
+          },
+        },
+      };
+    </script>
+<style>.skew-container {
+    transform: skew(-15deg)
+    }
+.skew-inverse {
+    transform: skew(15deg)
+    }
+.stencil-text {
+    -webkit-text-stroke: 1px rgba(173, 255, 47, 0.3);
+    text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.8)
+    }
+.hazard-gradient {
+    background: repeating-linear-gradient(-45deg, #adff2f, #adff2f 10px, #0d0f10 10px, #0d0f10 20px)
+    }
+.noise {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDS7F5cndVA8JdcE4pR5r4QapdGYNXyfBYcTtUcTAJAWFIBBX6gWXxlFsE5viUoVDu9OvSoj5paUPx1Umb9MMuxNEJ7jC2X7-CLEsC6b-_oUlghrqp0ozjWk1b2X82RtAYK4ItSCHS7Zf82eteYpDagdNKrEKVbBVcIvwtLzb0vnZRK0kmMpVk42QvnJMeGsxY-TzpwnO44ZQ3XDH_mywqr_jRuL6uVtnWPAFgUlb3g6fyq8XOnwznNjd_Vggj9Kv2jqx7P8RS7gC4);
+    filter: contrast(150%) brightness(50%);
+    mix-blend-mode: overlay
+    }
+.menu-block {
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    transition: all 0.3s ease
+    }
+.menu-block:hover {
+    transform: translatex(-20px) scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(173, 255, 47, 0.5))
+    }
+.geiger-line {
+    height: 2px;
+    background: #adff2f;
+    box-shadow: 0 0 10px #adff2f;
+    position: relative;
+    overflow: hidden
+    }
+.geiger-line::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(90deg, transparent, #adff2f, transparent);
+    animation: geiger-scan 2s linear infinite
+    }
+@keyframes geiger-scan {
+    from {
+        transform: translateX(-100%);
+        } to {
+        transform: translateX(100%);
+        }
+    }
+.silhouette {
+    filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.5));
+    opacity: 0.15;
+    mask-image: linear-gradient(to bottom, black 50%, transparent)
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white font-ui overflow-hidden h-screen select-none">
+<div class="fixed inset-0 z-0">
+<div class="absolute inset-0 bg-background-dark"></div>
+<div class="absolute inset-0 silhouette flex items-end justify-center space-x-12 px-20">
+<div class="w-32 h-[80%] bg-white/20 skew-x-[-12deg]"></div>
+<div class="w-48 h-[95%] bg-white/10 skew-x-[15deg]"></div>
+<div class="w-40 h-[70%] bg-white/20 skew-x-[-5deg]"></div>
+<div class="w-56 h-[100%] bg-white/10 skew-x-[8deg]"></div>
+<div class="w-24 h-[60%] bg-white/20 skew-x-[-20deg]"></div>
+</div>
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="absolute top-0 left-[-10%] w-[120%] h-2 bg-white/5 rotate-[15deg]"></div>
+<div class="absolute bottom-1/4 left-[-10%] w-[120%] h-4 bg-white/5 rotate-[-10deg]"></div>
+<div class="absolute top-1/3 right-0 w-2 h-screen bg-white/5 rotate-[5deg]"></div>
+</div>
+<div class="absolute inset-0 noise opacity-40"></div>
+</div>
+<div class="relative z-10 h-full w-full flex flex-col justify-between p-12 lg:p-24 overflow-hidden">
+<div class="flex flex-col max-w-2xl mt-12">
+<div class="flex items-center space-x-0 mb-6 group">
+<div class="bg-primary text-black font-mono text-xs px-4 py-1 skew-x-[-20deg] flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-2 skew-x-[20deg] animate-pulse">radioactive</span>
+<span class="skew-x-[20deg] tracking-widest uppercase font-bold">Geiger Counter // Sector 00-A</span>
+</div>
+<div class="border border-primary/50 text-primary font-mono text-[10px] px-3 py-1 skew-x-[-20deg] ml-2">
+<span class="skew-x-[20deg]">RADS: 45.2 mSv/h</span>
+</div>
+</div>
+<div class="relative">
+<h1 class="font-display text-7xl lg:text-9xl uppercase leading-tight italic stencil-text tracking-tighter text-white">
+                    Wasteland<br/>
+<span class="text-primary italic animate-glitch">Survivor</span>
+</h1>
+<p class="mt-4 font-mono text-primary/80 tracking-[0.3em] uppercase text-sm border-l-4 border-primary pl-4">
+                    Protocol 412: Echoes of the Old World
+                </p>
+</div>
+<div class="mt-12 w-64">
+<div class="flex items-end justify-between h-8 mb-2 px-1">
+<div class="w-1 bg-primary h-[20%]"></div>
+<div class="w-1 bg-primary h-[80%] animate-pulse"></div>
+<div class="w-1 bg-primary h-[40%]"></div>
+<div class="w-1 bg-primary h-[100%]"></div>
+<div class="w-1 bg-primary h-[60%] animate-pulse"></div>
+<div class="w-1 bg-primary h-[90%]"></div>
+<div class="w-1 bg-primary h-[30%]"></div>
+<div class="w-1 bg-primary h-[70%]"></div>
+</div>
+<div class="geiger-line"></div>
+<div class="flex justify-between mt-2 font-mono text-[10px] text-primary/60">
+<span>SENSITIVITY: HIGH</span>
+<span>ACTIVE SCANNING...</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-10">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-1 bg-primary"></div>
+<div class="font-mono text-xs tracking-widest text-primary/70">
+                    ACCESSING SURVIVAL ARCHIVES... STATUS: CRITICAL
+                </div>
+</div>
+</div>
+<div class="absolute right-[-2rem] top-1/2 -translate-y-1/2 flex flex-col space-y-4 w-[400px]">
+<button class="menu-block group bg-primary text-black px-12 py-6 flex items-center justify-start space-x-6 cursor-pointer">
+<span class="material-symbols-outlined text-3xl font-bold">play_arrow</span>
+<div class="flex flex-col items-start">
+<span class="font-display text-2xl tracking-wider uppercase">Initial Scavenge</span>
+<span class="text-[10px] font-mono tracking-widest opacity-70">START NEW ADVENTURE</span>
+</div>
+</button>
+<button class="menu-block group bg-slate-grey/40 backdrop-blur-md border-r-4 border-primary/40 text-white px-12 py-6 flex items-center justify-start space-x-6 hover:bg-slate-grey/60 cursor-pointer">
+<span class="material-symbols-outlined text-3xl font-bold text-primary">lock</span>
+<div class="flex flex-col items-start">
+<span class="font-display text-2xl tracking-wider uppercase">Resume Journey</span>
+<span class="text-[10px] font-mono tracking-widest opacity-70">LOAD SAVED SECTOR</span>
+</div>
+</button>
+<button class="menu-block group bg-white text-black px-12 py-4 flex items-center justify-start space-x-6 hover:bg-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-2xl font-bold">settings</span>
+<div class="flex flex-col items-start">
+<span class="font-display text-xl tracking-wider uppercase">Terminal Config</span>
+<span class="text-[9px] font-mono tracking-widest opacity-70">SYSTEM CALIBRATION</span>
+</div>
+</button>
+<button class="menu-block group bg-black/80 text-white border-l-2 border-primary/20 px-12 py-4 flex items-center justify-start space-x-6 hover:text-primary cursor-pointer">
+<svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+</svg>
+<div class="flex flex-col items-start">
+<span class="font-mono text-xl tracking-widest uppercase italic">Source Code</span>
+</div>
+</button>
+</div>
+</div>
+<div class="fixed top-0 right-0 w-64 h-64 pointer-events-none opacity-20">
+<svg class="w-full h-full text-white" viewBox="0 0 100 100">
+<path d="M100 0 L100 20 L80 0 Z" fill="currentColor"></path>
+<path d="M100 30 L100 35 L65 0 L60 0 Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="fixed top-8 left-8 flex items-center space-x-3 pointer-events-none z-50">
+<div class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+</div>
+<span class="font-mono text-[10px] text-red-600 font-bold tracking-widest animate-pulse">WARROOM CONNECTED</span>
+</div>
+<script>
+        // Simple script to add slightly random opacity/distress to title characters if needed
+        // but mostly handled by CSS effects and the font itself.
+    </script>
+
+</body></html>

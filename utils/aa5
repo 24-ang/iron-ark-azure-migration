@@ -1,0 +1,16 @@
+<div class="loader">
+  <div class="box">
+    <div class="top-side"></div>
+    <div class="bottom-side"></div>
+
+    <div class="screen">
+      <div class="lightray-limit">
+        <div class="lightray"></div>
+      </div>
+
+      <div class="loader-box">
+        <div class="progress"></div>
+      </div>
+    </div>
+  </div>
+</div>

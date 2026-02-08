@@ -1,0 +1,11 @@
+<!-- From Uiverse.io by ali-hv --> 
+<label class="switch">
+  <input type="checkbox" checked="checked" />
+  <div class="button">
+    <div class="light"></div>
+    <div class="dots"></div>
+    <div class="shadow"></div>
+    <div class="characters"></div>
+    <div class="shine"></div>
+  </div>
+</label>

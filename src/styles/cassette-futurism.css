@@ -1,0 +1,962 @@
+/**
+ * WASTELAND 2155 - UI/UX PRO MAX DESIGN SYSTEM
+ * Based on design-system/wasteland-2155/MASTER.md
+ * Style: Retro-Futurism | Generated: 2026-02-07
+ */
+
+/* ========================================
+   GOOGLE FONTS IMPORT
+   ======================================== */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+
+/* ========================================
+   TAILWIND CSS DIRECTIVES
+   ======================================== */
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   CSS VARIABLES - From MASTER.md
+   ======================================== */
+:root {
+  /* Color Palette - Monochrome Green Radiation */
+  --color-primary: #052e16; /* Deepest Green */
+  --color-secondary: #14532d; /* Dark Green */
+  --color-cta: #22c55e; /* Terminal Green (Base) */
+  --color-background: #000000;
+  --color-text: #22c55e; /* Default Text is Green */
+
+  /* Additional Colors */
+  --color-warning: #22c55e; /* Even warnings are green in monochrome mode, maybe brighter */
+  --color-danger: #ef4444; /* CRITICAL ALERT only */
+  --color-steel-gray: #14532d;
+
+  /* Typography */
+  --font-heading: "Press Start 2P", monospace;
+  --font-body: "VT323", monospace;
+
+  /* Shadows - Reduced for readability */
+  --glow-green: 0 0 2px rgba(34, 197, 94, 0.5);
+  --glow-panel:
+    0 0 10px rgba(34, 197, 94, 0.1), inset 0 0 15px rgba(34, 197, 94, 0.03);
+}
+
+/* ========================================
+   GLOBAL SCROLLBAR - GREEN THEME
+   ======================================== */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #000;
+  border: 1px solid #14532d;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #14532d;
+  border-radius: 0;
+  border: 1px solid #22c55e;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #22c55e;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #000;
+}
+
+/* ========================================
+   SCAN LINE ANIMATION (Wireframe Body)
+   ======================================== */
+@keyframes scan-line {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+.animate-scan-line {
+  animation: scan-line 3s linear infinite;
+}
+
+
+
+/* ========================================
+   THEME SCOPE
+   ======================================== */
+.cassette-futurism-theme {
+  --color-text: #22c55e;
+  color: var(--color-text);
+  font-family: "VT323", monospace;
+  background-color: #000000;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden; /* Prevent scroll on body, handle in panels */
+}
+
+/* CRT Grid Background */
+.cassette-futurism-theme .bg-boot {
+  background-color: #020617;
+  background-image:
+    linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+}
+
+/* Floating Window Style */
+.panel-floating {
+  background: rgba(0, 10, 2, 0.85);
+  border: 2px solid var(--color-cta);
+  border-radius: 12px;
+  box-shadow: var(--glow-panel);
+  position: relative;
+  backdrop-filter: blur(4px);
+}
+
+/* Neon Glow Effects */
+.cassette-futurism-theme .phosphor-glow,
+.cassette-futurism-theme .text-green {
+  color: var(--color-cta);
+  text-shadow: var(--glow-green);
+}
+
+.amber-glow,
+.text-amber {
+  color: #fbbf24; /* Amber for distinct highlights inside green terminal */
+  text-shadow: 0 0 5px #fbbf24;
+}
+
+.text-cta {
+  color: var(--color-cta);
+}
+.text-red {
+  color: var(--color-danger);
+  text-shadow: 0 0 5px red;
+}
+.text-gray {
+  color: #4ade80;
+  opacity: 0.6;
+} /* Gray is just dim green now */
+.text-void {
+  color: var(--color-background);
+}
+
+/* ========================================
+   CRT EFFECTS - Scanlines, Curvature, Bloom
+   ======================================== */
+
+/* Screen curvature container */
+.cassette-futurism-theme {
+  perspective: 1000px;
+}
+
+/* Main viewport with curvature */
+.cassette-futurism-theme > * {
+  transform-style: preserve-3d;
+}
+
+/* CRT Scanlines overlay */
+.cassette-futurism-theme::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
+  z-index: 1000;
+
+  /* Stronger scanlines */
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.25) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+
+  animation:
+    flicker 0.15s infinite,
+    scanline-move 8s linear infinite;
+}
+
+/* Screen vignette and bloom */
+.cassette-futurism-theme::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
+  z-index: 999;
+
+  /* Vignette effect */
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+
+  /* Screen curvature distortion */
+  border-radius: 2%;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes scanline-move {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* Chromatic Aberration */
+.chromatic-aberration {
+  position: relative;
+}
+
+.chromatic-aberration::before {
+  content: attr(data-text);
+  position: absolute;
+  left: -1px;
+  text-shadow: -1px 0 red;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.chromatic-aberration::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 1px;
+  text-shadow: 1px 0 cyan;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ========================================
+   CASSETTE FUTURISM BUTTONS
+   ======================================== */
+
+.cassette-futurism-theme button,
+.cassette-futurism-theme .btn {
+  position: relative;
+  border: 2px solid var(--color-cta);
+  background: linear-gradient(180deg, #0a0e14 0%, #050810 100%);
+  color: var(--color-cta);
+  padding: 14px 28px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 18px;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Cassette-style tactile shadow */
+  box-shadow:
+    0 4px 0 0 rgba(34, 197, 94, 0.3),
+    0 6px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  /* Subtle inner glow */
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.cassette-futurism-theme button:hover,
+.cassette-futurism-theme .btn:hover {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  color: #000;
+  border-color: #4ade80;
+  transform: translateY(-2px);
+  text-shadow: none;
+
+  box-shadow:
+    0 6px 0 0 rgba(34, 197, 94, 0.5),
+    0 8px 16px rgba(34, 197, 94, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(34, 197, 94, 0.6);
+}
+
+.cassette-futurism-theme button:active,
+.cassette-futurism-theme .btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 0 rgba(34, 197, 94, 0.3),
+    0 3px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Primary Button (CTA) */
+.btn-primary {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  color: #000;
+  border-color: #4ade80;
+  font-weight: 600;
+  text-shadow: none;
+
+  box-shadow:
+    0 5px 0 0 #16a34a,
+    0 7px 12px rgba(34, 197, 94, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 15px rgba(34, 197, 94, 0.5);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 0 0 #16a34a,
+    0 10px 20px rgba(34, 197, 94, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 25px rgba(34, 197, 94, 0.8);
+}
+
+.btn-primary:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 0 #16a34a,
+    0 4px 6px rgba(34, 197, 94, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: transparent;
+  color: var(--color-steel-gray);
+  border: 2px solid var(--color-steel-gray);
+  box-shadow:
+    0 3px 0 0 rgba(58, 58, 58, 0.3),
+    0 5px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(58, 58, 58, 0.3);
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+
+/* ========================================
+   INPUTS
+   ======================================== */
+
+.cassette-futurism-theme input,
+.cassette-futurism-theme textarea,
+.cassette-futurism-theme select {
+  border: 1px solid var(--color-steel-gray);
+  background: var(--color-background);
+  color: var(--color-cta);
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.cassette-futurism-theme input:focus,
+.cassette-futurism-theme textarea:focus,
+.cassette-futurism-theme select:focus {
+  border-color: var(--color-cta);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+/* ========================================
+   CARDS & CONTAINERS
+   ======================================== */
+
+.cassette-futurism-theme .panel,
+.cassette-futurism-theme .modal,
+.cassette-futurism-theme .card {
+  border: 1px solid var(--color-steel-gray);
+  background: var(--color-background);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+  transition: all 200ms ease;
+}
+
+.card {
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   HUD FRAME - Persistent Status Display
+   ======================================== */
+.cassette-futurism-theme .hud-frame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
+  z-index: 100;
+  border: 2px solid var(--color-steel-gray);
+}
+
+.hud-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-cta);
+}
+
+.hud-corner.top-left {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+.hud-corner.top-right {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+}
+.hud-corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+}
+.hud-corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
+
+.hud-status {
+  position: absolute;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-cta);
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(2, 6, 23, 0.95);
+  border: 1px solid var(--color-steel-gray);
+  pointer-events: auto;
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+
+  /* Breathing animation */
+  animation: hud-breathe 3s ease-in-out infinite;
+}
+
+@keyframes hud-breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hud-status.top-left {
+  top: 8px;
+  left: 8px;
+}
+.hud-status.top-right {
+  top: 8px;
+  right: 8px;
+}
+.hud-status.bottom-left {
+  bottom: 8px;
+  left: 8px;
+}
+.hud-status.bottom-right {
+  bottom: 8px;
+  right: 8px;
+}
+
+/* ========================================
+   MODALS
+   ======================================== */
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.cassette-futurism-theme .modal {
+  background: var(--color-background);
+  border: 2px solid var(--color-cta);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-xl);
+  max-width: 500px;
+  width: 90%;
+}
+
+/* ========================================
+   ANIMATIONS & EFFECTS
+   ======================================== */
+
+/* Blinking cursor */
+.cursor-blink::after {
+  content: "█";
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Glitch effect */
+.glitch {
+  position: relative;
+  animation: glitch-anim 2s infinite;
+}
+
+@keyframes glitch-anim {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+/* Screen boot animation */
+@keyframes screen-boot {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.boot-animation {
+  animation: screen-boot 1.5s ease-out;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.bg-void {
+  background-color: var(--color-background);
+}
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.bg-steel {
+  background-color: var(--color-steel-gray);
+}
+
+.border-green {
+  border-color: var(--color-cta);
+}
+.border-amber {
+  border-color: var(--color-warning);
+}
+.border-red {
+  border-color: var(--color-danger);
+}
+.border-steel-gray {
+  border-color: var(--color-steel-gray);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN - MASTER.md Breakpoints
+   ======================================== */
+
+/* Mobile (375px) */
+@media (max-width: 375px) {
+  :root {
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+  button,
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Tablet (768px) */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  .hud-status {
+    font-size: 12px;
+  }
+}
+
+/* Desktop (1024px) */
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 3rem;
+  }
+}
+
+/* Large Desktop (1440px) */
+@media (min-width: 1440px) {
+  h1 {
+    font-size: 3.5rem;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY - prefers-reduced-motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  body::before {
+    animation: none;
+  }
+}
+
+/* ========================================
+   FOCUS STATES - Keyboard Navigation
+   ======================================== */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
+}
+
+/* ===================================
+   WASTELAND SETTINGS OVERRIDES
+   =================================== */
+
+/* Override Persona 3 styles in SettingsAIServices and SettingsContext */
+/* Note: Don't override background on wrapper, only on child elements */
+
+/* Root container should have proper background */
+.wasteland-settings-context > div {
+  background: var(--color-background) !important;
+}
+
+/* Ensure all text is visible */
+.wasteland-settings-context * {
+  color: var(--color-cta);
+}
+
+.wasteland-settings-ai .bg-white,
+.wasteland-settings-context .bg-white,
+.wasteland-settings-ai .bg-zinc-100,
+.wasteland-settings-context .bg-zinc-100,
+.wasteland-settings-ai .bg-zinc-50,
+.wasteland-settings-context .bg-zinc-50 {
+  background: var(--color-background) !important;
+  border-color: var(--color-steel-gray) !important;
+}
+
+.wasteland-settings-ai .bg-zinc-900,
+.wasteland-settings-context .bg-zinc-900,
+.wasteland-settings-ai .bg-black,
+.wasteland-settings-context .bg-black {
+  background: var(--color-void) !important;
+}
+
+/* Text color overrides */
+.wasteland-settings-ai .text-black,
+.wasteland-settings-context .text-black,
+.wasteland-settings-ai .text-zinc-700,
+.wasteland-settings-context .text-zinc-700,
+.wasteland-settings-ai .text-zinc-600,
+.wasteland-settings-context .text-zinc-600 {
+  color: var(--color-cta) !important;
+}
+
+.wasteland-settings-ai .text-zinc-500,
+.wasteland-settings-context .text-zinc-500,
+.wasteland-settings-ai .text-zinc-400,
+.wasteland-settings-context .text-zinc-400 {
+  color: var(--color-gray) !important;
+}
+
+.wasteland-settings-ai .text-green-500,
+.wasteland-settings-context .text-green-500 {
+  color: var(--color-cta) !important;
+}
+
+.wasteland-settings-ai .text-zinc-300,
+.wasteland-settings-context .text-zinc-300 {
+  color: var(--color-gray) !important;
+}
+
+/* Border overrides */
+.wasteland-settings-ai .border-black,
+.wasteland-settings-context .border-black,
+.wasteland-settings-ai .border-zinc-300,
+.wasteland-settings-context .border-zinc-300,
+.wasteland-settings-ai .border-zinc-200,
+.wasteland-settings-context .border-zinc-200 {
+  border-color: var(--color-steel-gray) !important;
+}
+
+/* Button overrides */
+.wasteland-settings-ai button,
+.wasteland-settings-context button {
+  font-family: var(--font-terminal);
+  text-transform: uppercase;
+}
+
+.wasteland-settings-ai .bg-red-600,
+.wasteland-settings-context .bg-red-600,
+.wasteland-settings-ai .text-red-600,
+.wasteland-settings-context .text-red-600,
+.wasteland-settings-ai .border-red-600,
+.wasteland-settings-context .border-red-600 {
+  background-color: var(--color-cta) !important;
+  color: var(--color-background) !important;
+  border-color: var(--color-cta) !important;
+}
+
+.wasteland-settings-ai .hover\:bg-red-500:hover,
+.wasteland-settings-context .hover\:bg-red-500:hover,
+.wasteland-settings-ai .hover\:bg-red-600:hover,
+.wasteland-settings-context .hover\:bg-red-600:hover {
+  background-color: var(--color-amber) !important;
+}
+
+/* Input overrides */
+.wasteland-settings-ai input[type="text"],
+.wasteland-settings-context input[type="text"],
+.wasteland-settings-ai input[type="password"],
+.wasteland-settings-context input[type="password"],
+.wasteland-settings-ai input[type="number"],
+.wasteland-settings-context input[type="number"],
+.wasteland-settings-ai textarea,
+.wasteland-settings-context textarea,
+.wasteland-settings-ai select,
+.wasteland-settings-context select {
+  background: var(--color-void) !important;
+  border-color: var(--color-steel-gray) !important;
+  color: var(--color-cta) !important;
+  font-family: var(--font-terminal);
+}
+
+.wasteland-settings-ai input:focus,
+.wasteland-settings-context input:focus,
+.wasteland-settings-ai textarea:focus,
+.wasteland-settings-context textarea:focus,
+.wasteland-settings-ai select:focus,
+.wasteland-settings-context select:focus {
+  border-color: var(--color-cta) !important;
+  outline: none !important;
+}
+
+/* Table overrides */
+.wasteland-settings-context table {
+  background: var(--color-background) !important;
+}
+
+.wasteland-settings-context thead {
+  background: var(--color-void) !important;
+  color: var(--color-gray) !important;
+}
+
+.wasteland-settings-context tbody tr {
+  border-color: var(--color-steel-gray) !important;
+}
+
+.wasteland-settings-context tbody tr:hover {
+  background: rgba(34, 197, 94, 0.05) !important;
+}
+
+/* Preview area */
+.wasteland-settings-context .bg-zinc-900 textarea {
+  background: var(--color-void) !important;
+  color: var(--color-cta) !important;
+  font-family: var(--font-terminal);
+}
+
+/* Accent colors */
+.wasteland-settings-ai .text-purple-600,
+.wasteland-settings-context .text-indigo-600,
+.wasteland-settings-context .text-indigo-700 {
+  color: var(--color-cta) !important;
+}
+
+.wasteland-settings-context .bg-indigo-50,
+.wasteland-settings-context .hover\:bg-indigo-50:hover {
+  background: rgba(34, 197, 94, 0.1) !important;
+}
+
+.wasteland-settings-context .border-indigo-500 {
+  border-color: var(--color-cta) !important;
+}
+
+/* Icon colors */
+.wasteland-settings-context svg {
+  color: var(--color-cta);
+}
+
+/* Scrollbar */
+.wasteland-settings-ai .custom-scrollbar::-webkit-scrollbar,
+.wasteland-settings-context .custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.wasteland-settings-ai .custom-scrollbar::-webkit-scrollbar-track,
+.wasteland-settings-context .custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+
+.wasteland-settings-ai .custom-scrollbar::-webkit-scrollbar-thumb,
+.wasteland-settings-context .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-steel-gray);
+  border-radius: 4px;
+}
+
+.wasteland-settings-ai .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.wasteland-settings-context .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cta);
+}
+
+/* ===================================
+   GRID BACKGROUND FOR START SCREEN
+   =================================== */
+
+@keyframes grid-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+
+.wasteland-bg {
+  position: relative;
+  background:
+    linear-gradient(rgba(34, 197, 94, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 197, 94, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse at center, #0a0f1a 0%, #020408 100%);
+  background-size:
+    50px 50px,
+    50px 50px,
+    100% 100%;
+  animation: grid-move 20s linear infinite;
+}
+
+.wasteland-bg > * {
+  position: relative;
+  z-index: 10;
+}
+
+/* ===================================
+   LOADING TRANSITION ANIMATIONS
+   =================================== */
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}
+
+/* Fade transitions */
+.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Utility - Striped Background pattern */
+.bg-stripes {
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.5) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 75%, transparent 75%, transparent);
+  background-size: 4px 4px;
+}
+
+.text-shadow-green {
+  text-shadow: var(--glow-green);
+}
